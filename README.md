@@ -1,8 +1,4 @@
-# Microprocessors
-Repository for Physics Year 3 microprocessors lab
+# Oscilloscope Clock controlled by PIC18 Microprocessor
+This is the source code to our Oscilloscope Clock project. The program ouputs signals from a PIC18 microprocessor into an oscilloscope in XY-mode. A functioning analogue clock is displayed on the oscilloscope. The other functionalities include setting the time, setting an alarm time, turning the alarm on or off, and cycling through clockfaces using a keypad. There is also an external LCD display which gives information about the status of the alarm: whether it is on or off, and what time it is set to.
 
-A simple assembly program for PIC18 microprocessor
-
-Reads a table (message) from programme memory to data memory
-
-Initialises UART and writes a message (the table) to UART 
+Made by Varin A. and Dawud A. in 2022.
