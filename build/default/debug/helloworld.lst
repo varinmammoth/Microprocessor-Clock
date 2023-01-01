@@ -1,0 +1,144 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Tue Dec 13 10:49:46 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,abs,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24   000000                     
+    25                           	psect	udata_acs
+    26   000032                     counter:
+    27   000032                     	ds	1	; reserve one byte for a counter variable
+    28   000033                     delay_count:
+    29   000033                     	ds	1	; reserve data anywhere in RAM (here at 0x400)
+    30                           
+    31                           	psect	udata_bank4
+    32   000480                     myArray:
+    33   000480                     	ds	128	; reserve 128 bytes for message data
+    34                           
+    35                           	psect	code
+    36   000000                     rst:
+    37   000000                     	org	0
+    38   000000  EF02  F000         	goto	setup
+    39   000004                     setup:
+    40   000004  9C7F               	bcf	127,6,c	; point to Flash program memory
+    41   000006  8E7F               	bsf	127,7,c	; access Flash program memory
+    42   000008  EC57  F0E3         	call	UART_Setup	; setup UART
+    43   00000C  EF08  F000         	goto	start
+    44   000010                     start:
+    45   000010  EE04  F080         	lfsr	0,myArray	; Load FSR0 with address in RAM
+    46   000014  0E01               	movlw	low (myTable shr (0+16))	; address of data in PM
+    47   000016  6EF8               	movwf	tblptru,c	; load upper bits to TBLPTRU
+    48   000018  0EC6               	movlw	high myTable	; address of data in PM
+    49   00001A  6EF7               	movwf	tblptrh,c	; load high byte to TBLPTRH
+    50   00001C  0E58               	movlw	low myTable	; address of data in PM
+    51   00001E  6EF6               	movwf	tblptrl,c	; load low byte to TBLPTRL
+    52   000020  0E0D               	movlw	13	; bytes to read
+    53   000022  6E32               	movwf	counter,c	; our counter register
+    54   000024                     loop:
+    55   000024  0009               	tblrd		*+	; one byte from PM to TABLAT, increment TBLPRT
+    56   000026  CFF5 FFEE          	movff	tablat,postinc0	; move data from TABLAT to (FSR0), inc FSR0
+    57   00002A  2E32               	decfsz	counter,f,c	; count down to zero
+    58   00002C  D7FB               	bra	loop	; keep going until finished
+    59   00002E  0E0D               	movlw	13	; output message to UART
+    60   000030  EE24  F080         	lfsr	2,myArray
+    61   000034  EC60  F0E3         	call	UART_Transmit_Message
+    62   000038  EF1C  F000         	goto	$	; goto current line in code
+    63   00003C                     delay:
+    64   00003C  2E33               	decfsz	delay_count,f,c	; decrement until zero
+    65   00003E  D7FE               	bra	delay
+    66   000040  0012               	return	
+    67                           
+    68                           	psect	data
+    69   01C658                     myTable:
+    70   01C658  48 65 6C 6C 6F 20 57 6F 72 6C 64 21 0A 	db	72,101,108,108,111,32,87,111,114,108,100,33,10
+    71                           
+    72                           ; message, plus carriage return
+    73   01C665  00                 	align	2
+    74                           
+    75                           	psect	edata
+    76   000000                     stk_offset	set	0
+    77   000000                     auto_size	set	0
+    78                           
+    79                           ; stack_auto defines a symbol /name/_offset which equates to the
+    80                           ; stack offset of the auto object in question
+    81   000000                     
+    82                           ; stack_param defines a symbol /name/_offset which equates to the
+    83                           ; stack offset of the parameter object in question
+    84   000000                     
+    85                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    86                           ; it also links in to the btemp symbol so that can be used
+    87   000000                     
+    88                           ; restore_stack adjusts the SP to remove all auto and parameter
+    89                           ; objects from the stack prior to returning from a function
+    90   000000                     tosu	equ	0xFFF
+    91                           tosh	equ	0xFFE
+    92                           tosl	equ	0xFFD
+    93                           stkptr	equ	0xFFC
+    94                           pclatu	equ	0xFFB
+    95                           pclath	equ	0xFFA
+    96                           pcl	equ	0xFF9
+    97                           tblptru	equ	0xFF8
+    98                           tblptrh	equ	0xFF7
+    99                           tblptrl	equ	0xFF6
+   100                           tablat	equ	0xFF5
+   101                           prodh	equ	0xFF4
+   102                           prodl	equ	0xFF3
+   103                           indf0	equ	0xFEF
+   104                           postinc0	equ	0xFEE
+   105                           postdec0	equ	0xFED
+   106                           preinc0	equ	0xFEC
+   107                           plusw0	equ	0xFEB
+   108                           fsr0h	equ	0xFEA
+   109                           fsr0l	equ	0xFE9
+   110                           wreg	equ	0xFE8
+   111                           indf1	equ	0xFE7
+   112                           postinc1	equ	0xFE6
+   113                           postdec1	equ	0xFE5
+   114                           preinc1	equ	0xFE4
+   115                           plusw1	equ	0xFE3
+   116                           fsr1h	equ	0xFE2
+   117                           fsr1l	equ	0xFE1
+   118                           bsr	equ	0xFE0
+   119                           indf2	equ	0xFDF
+   120                           postinc2	equ	0xFDE
+   121                           postdec2	equ	0xFDD
+   122                           preinc2	equ	0xFDC
+   123                           plusw2	equ	0xFDB
+   124                           fsr2h	equ	0xFDA
+   125                           fsr2l	equ	0xFD9
+   126                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Tue Dec 13 10:49:46 2022
+
+                             rst 0000                              loop 0024                             delay 003C  
+                           setup 0004                             start 0010                            EECON1 000F7F  
+                          TABLAT 000FF5                           TBLPTRH 000FF7                           TBLPTRL 000FF6  
+                         TBLPTRU 000FF8                           isa$std 000001                           counter 0032  
+                         myArray 0480                           myTable C658                          POSTINC0 000FEE  
+                      UART_Setup C6AE                       delay_count 0033             UART_Transmit_Message C6C0  
+                       isa$xinst 000000                         myTable_l 00000D  

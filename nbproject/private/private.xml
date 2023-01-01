@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1">
+        <file>
+            <url>hex_to_decimal.s</url>
+            <bookmark id="1">
+                <name/>
+                <line>15</line>
+                <key/>
+            </bookmark>
+        </file>
+    </editor-bookmarks>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/main.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/LCD_screen.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/updateTime.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/timer_setup.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/output.map</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/hex_to_decimal.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/Alarm.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/keypad.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/Display.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/delays.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/README.md</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/lookup_tables.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/16x16multiplier.s</file>
+            <file>file:/H:/micorprocessor/MicroprocessorsLab/LCD.s</file>
+        </group>
+    </open-files>
+</project-private>

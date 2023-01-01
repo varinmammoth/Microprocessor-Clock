@@ -1,0 +1,169 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Thu Dec 15 11:04:42 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	hex_to_decimal_code,global,class=CODE,delta=1
+    25   000000                     
+    26                           	psect	udata_acs
+    27   00002C                     digit1:
+    28                           	callstack 0
+    29   00002C                     	ds	1
+    30   00002D                     digit2:
+    31                           	callstack 0
+    32   00002D                     	ds	1
+    33   00002E                     digit3:
+    34                           	callstack 0
+    35   00002E                     	ds	1
+    36   00002F                     digit4:
+    37                           	callstack 0
+    38   00002F                     	ds	1
+    39                           
+    40                           	psect	edata
+    41   000000                     stk_offset	set	0
+    42   000000                     auto_size	set	0
+    43                           
+    44                           ; stack_auto defines a symbol /name/_offset which equates to the
+    45                           ; stack offset of the auto object in question
+    46   000000                     
+    47                           ; stack_param defines a symbol /name/_offset which equates to the
+    48                           ; stack offset of the parameter object in question
+    49   000000                     
+    50                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    51                           ; it also links in to the btemp symbol so that can be used
+    52   000000                     
+    53                           ; restore_stack adjusts the SP to remove all auto and parameter
+    54                           ; objects from the stack prior to returning from a function
+    55   000000                     
+    56                           	psect	hex_to_decimal_code
+    57   01C5D2                     hex_to_dec:
+    58                           	callstack 0
+    59                           
+    60                           ; k is set to 0x418A
+    61   01C5D2  0E41               	movlw	65
+    62   01C5D4  6F08               	movwf	address_1_high,b
+    63   01C5D6  0E8A               	movlw	138
+    64   01C5D8  6F09               	movwf	address_1_low,b
+    65                           
+    66                           ;the number we want to convert
+    67                           ; movlw 0x04
+    68                           ; movwf address_2_high
+    69                           ; movlw 0xD2
+    70                           ; movwf address_2_low
+    71                           ;multiply
+    72   01C5DA  ECC3  F0E3         	call	multiplier16x16
+    73   01C5DE  C000  F00C         	movff	eight1,address_1_1
+    74   01C5E2  C001  F00D         	movff	eight2,address_1_2
+    75   01C5E6  C002  F00E         	movff	eight3,address_1_3
+    76   01C5EA  0E0A               	movlw	10
+    77   01C5EC  6F0F               	movwf	address_2,b
+    78   01C5EE  C003  F02F         	movff	eight4,digit4
+    79   01C5F2  EC00  F0E4         	call	multiplier24x8
+    80   01C5F6  C000  F00C         	movff	eight1,address_1_1
+    81   01C5FA  C001  F00D         	movff	eight2,address_1_2
+    82   01C5FE  C002  F00E         	movff	eight3,address_1_3
+    83   01C602  0E0A               	movlw	10
+    84   01C604  6F0F               	movwf	address_2,b
+    85   01C606  C003  F02E         	movff	eight4,digit3
+    86   01C60A  EC00  F0E4         	call	multiplier24x8
+    87   01C60E  C000  F00C         	movff	eight1,address_1_1
+    88   01C612  C001  F00D         	movff	eight2,address_1_2
+    89   01C616  C002  F00E         	movff	eight3,address_1_3
+    90   01C61A  0E0A               	movlw	10
+    91   01C61C  6F0F               	movwf	address_2,b
+    92   01C61E  C003  F02D         	movff	eight4,digit2
+    93   01C622  EC00  F0E4         	call	multiplier24x8
+    94   01C626  C003  F02C         	movff	eight4,digit1
+    95                           
+    96                           ; move first bit of eight4 to result
+    97                           ; movf digit4, W
+    98                           ; addlw 0x30
+    99                           ; call LCD_Send_Byte_D
+   100                           ; movf digit3, W
+   101                           ; addlw 0x30
+   102                           ; call LCD_Send_Byte_D
+   103   01C62A  512D               	movf	digit2,w,b
+   104   01C62C  0F30               	addlw	48
+   105   01C62E  EC6E  F0E4         	call	LCD_Send_Byte_D
+   106   01C632  512C               	movf	digit1,w,b
+   107   01C634  0F30               	addlw	48
+   108   01C636  EC6E  F0E4         	call	LCD_Send_Byte_D
+   109   01C63A  0EAA               	movlw	170
+   110   01C63C  ECCD  F0E2         	call	delay
+   111                           
+   112                           ; call LCD_clear
+   113   01C640  0012               	return	
+   114                           tosu	equ	0xFFF
+   115                           tosh	equ	0xFFE
+   116                           tosl	equ	0xFFD
+   117                           stkptr	equ	0xFFC
+   118                           pclatu	equ	0xFFB
+   119                           pclath	equ	0xFFA
+   120                           pcl	equ	0xFF9
+   121                           tblptru	equ	0xFF8
+   122                           tblptrh	equ	0xFF7
+   123                           tblptrl	equ	0xFF6
+   124                           tablat	equ	0xFF5
+   125                           prodh	equ	0xFF4
+   126                           prodl	equ	0xFF3
+   127                           indf0	equ	0xFEF
+   128                           postinc0	equ	0xFEE
+   129                           postdec0	equ	0xFED
+   130                           preinc0	equ	0xFEC
+   131                           plusw0	equ	0xFEB
+   132                           fsr0h	equ	0xFEA
+   133                           fsr0l	equ	0xFE9
+   134                           wreg	equ	0xFE8
+   135                           indf1	equ	0xFE7
+   136                           postinc1	equ	0xFE6
+   137                           postdec1	equ	0xFE5
+   138                           preinc1	equ	0xFE4
+   139                           plusw1	equ	0xFE3
+   140                           fsr1h	equ	0xFE2
+   141                           fsr1l	equ	0xFE1
+   142                           bsr	equ	0xFE0
+   143                           indf2	equ	0xFDF
+   144                           postinc2	equ	0xFDE
+   145                           postdec2	equ	0xFDD
+   146                           preinc2	equ	0xFDC
+   147                           plusw2	equ	0xFDB
+   148                           fsr2h	equ	0xFDA
+   149                           fsr2l	equ	0xFD9
+   150                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Thu Dec 15 11:04:42 2022
+
+                           delay C59A                    multiplier24x8 C800                            digit1 002C  
+                          digit2 002D                            digit3 002E                            digit4 002F  
+                          eight1 0000                            eight2 0001                            eight3 0002  
+                          eight4 0003                   multiplier16x16 C786                           isa$std 000001  
+                     address_1_1 000C                       address_1_2 000D                       address_1_3 000E  
+                   address_1_low 0009                     address_2_low 000B                   LCD_Send_Byte_D C8DC  
+                       LCD_clear C94E                        hex_to_dec C5D2                         address_2 000F  
+                       isa$xinst 000000                    address_1_high 0008                    address_2_high 000A  

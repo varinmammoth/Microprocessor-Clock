@@ -1,0 +1,141 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Thu Dec 15 12:33:07 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	timer_setup_code,global,class=CODE,delta=1
+    25   000000                     
+    26                           	psect	udata_acs
+    27   000034                     timer_counter:
+    28   000034                     	ds	1
+    29                           
+    30                           	psect	edata
+    31   000000                     stk_offset	set	0
+    32   000000                     auto_size	set	0
+    33                           
+    34                           ; stack_auto defines a symbol /name/_offset which equates to the
+    35                           ; stack offset of the auto object in question
+    36   000000                     
+    37                           ; stack_param defines a symbol /name/_offset which equates to the
+    38                           ; stack offset of the parameter object in question
+    39   000000                     
+    40                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    41                           ; it also links in to the btemp symbol so that can be used
+    42   000000                     
+    43                           ; restore_stack adjusts the SP to remove all auto and parameter
+    44                           ; objects from the stack prior to returning from a function
+    45   000000                     
+    46                           	psect	timer_setup_code
+    47   01C596                     timer_interrupt:
+    48                           	callstack 0
+    49   01C596  ECD0  F0E2         	call	timer_0_interrupt
+    50   01C59A  ECDC  F0E2         	call	timer_1_interrupt
+    51   01C59E  0011               	retfie		f
+    52   01C5A0                     timer_0_interrupt:
+    53   01C5A0  A4F2               	btfss	242,2,c	; check that this is timer0 interrupt
+    54   01C5A2  0012               	return		; if not then return
+    55   01C5A4  94F2               	bcf	242,2,c
+    56   01C5A6  2B34               	incf	timer_counter,f,b
+    57                           
+    58                           ; movlw 244
+    59   01C5A8  0E14               	movlw	20
+    60   01C5AA  6334               	cpfseq	timer_counter,b
+    61   01C5AC  0012               	return	
+    62   01C5AE  0E00               	movlw	0
+    63   01C5B0  6F34               	movwf	timer_counter,b
+    64   01C5B2  EC2A  F0E3         	call	update_time	; updates the second, minute, and hour variable
+    65   01C5B6  0012               	return		; return from interrupt
+    66   01C5B8                     timer_1_interrupt:
+    67   01C5B8  A09E               	btfss	158,0,c	; check that this is timer0 interrupt
+    68   01C5BA  0012               	return		; if not then return
+    69   01C5BC  1E84               	comf	3972,f,c
+    70   01C5BE  909E               	bcf	158,0,c
+    71   01C5C0  EC3F  F0F2         	call	sound_alarm
+    72   01C5C4  0012               	return	
+    73   01C5C6                     timer_setup:
+    74                           	callstack 0
+    75   01C5C6  0E00               	movlw	0
+    76   01C5C8  6F34               	movwf	timer_counter,b
+    77   01C5CA  0E88               	movlw	136
+    78   01C5CC  6ED5               	movwf	4053,c
+    79   01C5CE  0E07               	movlw	7
+    80   01C5D0  6ECD               	movwf	4045,c
+    81                           
+    82                           ; bsf ((INTCON) and 0FFh), 5, a ; Enable timer0 interrupt
+    83                           ;bcf ((RCON) and 0FFh), 7, a
+    84   01C5D2  8CF2               	bsf	242,6,c
+    85   01C5D4  809D               	bsf	157,0,c
+    86   01C5D6  8EF2               	bsf	242,7,c	; Enable all interrupts
+    87   01C5D8  0012               	return	
+    88                           tosu	equ	0xFFF
+    89                           tosh	equ	0xFFE
+    90                           tosl	equ	0xFFD
+    91                           stkptr	equ	0xFFC
+    92                           pclatu	equ	0xFFB
+    93                           pclath	equ	0xFFA
+    94                           pcl	equ	0xFF9
+    95                           tblptru	equ	0xFF8
+    96                           tblptrh	equ	0xFF7
+    97                           tblptrl	equ	0xFF6
+    98                           tablat	equ	0xFF5
+    99                           prodh	equ	0xFF4
+   100                           prodl	equ	0xFF3
+   101                           indf0	equ	0xFEF
+   102                           postinc0	equ	0xFEE
+   103                           postdec0	equ	0xFED
+   104                           preinc0	equ	0xFEC
+   105                           plusw0	equ	0xFEB
+   106                           fsr0h	equ	0xFEA
+   107                           fsr0l	equ	0xFE9
+   108                           wreg	equ	0xFE8
+   109                           indf1	equ	0xFE7
+   110                           postinc1	equ	0xFE6
+   111                           postdec1	equ	0xFE5
+   112                           preinc1	equ	0xFE4
+   113                           plusw1	equ	0xFE3
+   114                           fsr1h	equ	0xFE2
+   115                           fsr1l	equ	0xFE1
+   116                           bsr	equ	0xFE0
+   117                           indf2	equ	0xFDF
+   118                           postinc2	equ	0xFDE
+   119                           postdec2	equ	0xFDD
+   120                           preinc2	equ	0xFDC
+   121                           plusw2	equ	0xFDB
+   122                           fsr2h	equ	0xFDA
+   123                           fsr2l	equ	0xFD9
+   124                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Thu Dec 15 12:33:07 2022
+
+                   timer_counter 0034                              PIE1 000F9D                              PIR1 000F9E  
+                            hour 0029                             T0CON 000FD5                             T1CON 000FCD  
+                           PORTE 000F84                            INTCON 000FF2                   timer_interrupt C596  
+                          minute 0028                            second 0027                 timer_0_interrupt C5A0  
+                         isa$std 000001                 timer_1_interrupt C5B8                       timer_setup C5C6  
+                     update_time C654                       sound_alarm E47E                         isa$xinst 000000  

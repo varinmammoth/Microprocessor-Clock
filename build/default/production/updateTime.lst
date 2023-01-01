@@ -1,0 +1,187 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Thu Dec 15 11:07:58 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	update_time_code,global,class=CODE,delta=1
+    25   000000                     
+    26                           	psect	udata_acs
+    27   000028                     second:
+    28                           	callstack 0
+    29   000028                     	ds	1
+    30   000029                     minute:
+    31                           	callstack 0
+    32   000029                     	ds	1
+    33   00002A                     hour:
+    34                           	callstack 0
+    35   00002A                     	ds	1
+    36   00002B                     hour_number:
+    37                           	callstack 0
+    38   00002B                     	ds	1
+    39                           
+    40                           	psect	edata
+    41   000000                     stk_offset	set	0
+    42   000000                     auto_size	set	0
+    43                           
+    44                           ; stack_auto defines a symbol /name/_offset which equates to the
+    45                           ; stack offset of the auto object in question
+    46   000000                     
+    47                           ; stack_param defines a symbol /name/_offset which equates to the
+    48                           ; stack offset of the parameter object in question
+    49   000000                     
+    50                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    51                           ; it also links in to the btemp symbol so that can be used
+    52   000000                     
+    53                           ; restore_stack adjusts the SP to remove all auto and parameter
+    54                           ; objects from the stack prior to returning from a function
+    55   000000                     
+    56                           	psect	update_time_code
+    57   01C642                     initialize_time:
+    58                           	callstack 0
+    59   01C642  0E00               	movlw	0
+    60   01C644  6F28               	movwf	second,b
+    61   01C646  6F29               	movwf	minute,b
+    62   01C648  6F2A               	movwf	hour,b
+    63   01C64A  6F2B               	movwf	hour_number,b
+    64   01C64C                     update_time:
+    65                           	callstack 0
+    66   01C64C  ECA8  F0E2         	call	check_alarm
+    67   01C650  2B28               	incf	second,f,b
+    68   01C652  0E3C               	movlw	60
+    69   01C654  6328               	cpfseq	second,b
+    70   01C656  0012               	return	
+    71   01C658  EC31  F0E3         	call	update_minute
+    72   01C65C  0E00               	movlw	0
+    73   01C65E  6F28               	movwf	second,b
+    74   01C660  0012               	return	
+    75   01C662                     update_minute:
+    76   01C662  2B29               	incf	minute,f,b
+    77   01C664  EC3D  F0E3         	call	check_minute12
+    78   01C668  EC43  F0E3         	call	check_minute24
+    79   01C66C  EC49  F0E3         	call	check_minute36
+    80   01C670  EC4F  F0E3         	call	check_minute48
+    81   01C674  EC55  F0E3         	call	check_minute60
+    82   01C678  0012               	return	
+    83   01C67A                     check_minute12:
+    84   01C67A  0E0C               	movlw	12
+    85   01C67C  6329               	cpfseq	minute,b
+    86   01C67E  0012               	return	
+    87   01C680  EC5F  F0E3         	call	update_hour
+    88   01C684  0012               	return	
+    89   01C686                     check_minute24:
+    90   01C686  0E18               	movlw	24
+    91   01C688  6329               	cpfseq	minute,b
+    92   01C68A  0012               	return	
+    93   01C68C  EC5F  F0E3         	call	update_hour
+    94   01C690  0012               	return	
+    95   01C692                     check_minute36:
+    96   01C692  0E24               	movlw	36
+    97   01C694  6329               	cpfseq	minute,b
+    98   01C696  0012               	return	
+    99   01C698  EC5F  F0E3         	call	update_hour
+   100   01C69C  0012               	return	
+   101   01C69E                     check_minute48:
+   102   01C69E  0E30               	movlw	48
+   103   01C6A0  6329               	cpfseq	minute,b
+   104   01C6A2  0012               	return	
+   105   01C6A4  EC5F  F0E3         	call	update_hour
+   106   01C6A8  0012               	return	
+   107   01C6AA                     check_minute60:
+   108   01C6AA  0E3C               	movlw	60
+   109   01C6AC  6329               	cpfseq	minute,b
+   110   01C6AE  0012               	return	
+   111   01C6B0  EC66  F0E3         	call	update_hour_number
+   112   01C6B4  EC5F  F0E3         	call	update_hour
+   113   01C6B8  0E00               	movlw	0
+   114   01C6BA  6F29               	movwf	minute,b
+   115   01C6BC  0012               	return	
+   116   01C6BE                     update_hour:
+   117                           	callstack 0
+   118   01C6BE  2B2A               	incf	hour,f,b
+   119   01C6C0  0E3C               	movlw	60
+   120   01C6C2  632A               	cpfseq	hour,b
+   121   01C6C4  0012               	return	
+   122   01C6C6  0E00               	movlw	0
+   123   01C6C8  6F2A               	movwf	hour,b
+   124   01C6CA  0012               	return	
+   125   01C6CC                     update_hour_number:
+   126                           	callstack 0
+   127   01C6CC  2B2B               	incf	hour_number,f,b
+   128   01C6CE  0E0C               	movlw	12
+   129   01C6D0  632B               	cpfseq	hour_number,b
+   130   01C6D2  0012               	return	
+   131   01C6D4  0E00               	movlw	0
+   132   01C6D6  6F2B               	movwf	hour_number,b
+   133   01C6D8  0012               	return	
+   134                           tosu	equ	0xFFF
+   135                           tosh	equ	0xFFE
+   136                           tosl	equ	0xFFD
+   137                           stkptr	equ	0xFFC
+   138                           pclatu	equ	0xFFB
+   139                           pclath	equ	0xFFA
+   140                           pcl	equ	0xFF9
+   141                           tblptru	equ	0xFF8
+   142                           tblptrh	equ	0xFF7
+   143                           tblptrl	equ	0xFF6
+   144                           tablat	equ	0xFF5
+   145                           prodh	equ	0xFF4
+   146                           prodl	equ	0xFF3
+   147                           indf0	equ	0xFEF
+   148                           postinc0	equ	0xFEE
+   149                           postdec0	equ	0xFED
+   150                           preinc0	equ	0xFEC
+   151                           plusw0	equ	0xFEB
+   152                           fsr0h	equ	0xFEA
+   153                           fsr0l	equ	0xFE9
+   154                           wreg	equ	0xFE8
+   155                           indf1	equ	0xFE7
+   156                           postinc1	equ	0xFE6
+   157                           postdec1	equ	0xFE5
+   158                           preinc1	equ	0xFE4
+   159                           plusw1	equ	0xFE3
+   160                           fsr1h	equ	0xFE2
+   161                           fsr1l	equ	0xFE1
+   162                           bsr	equ	0xFE0
+   163                           indf2	equ	0xFDF
+   164                           postinc2	equ	0xFDE
+   165                           postdec2	equ	0xFDD
+   166                           preinc2	equ	0xFDC
+   167                           plusw2	equ	0xFDB
+   168                           fsr2h	equ	0xFDA
+   169                           fsr2l	equ	0xFD9
+   170                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Thu Dec 15 11:07:58 2022
+
+                            hour 002A                            minute 0029                            second 0028  
+                   update_minute C662                           isa$std 000001                    check_minute12 C67A  
+                  check_minute24 C686                    check_minute60 C6AA                    check_minute36 C692  
+                  check_minute48 C69E                          LCD_show C732                       check_alarm C550  
+                     hour_number 002B                update_hour_number C6CC                       update_hour C6BE  
+                     update_time C64C                         isa$xinst 000000                   initialize_time C642  

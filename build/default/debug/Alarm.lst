@@ -1,0 +1,129 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Thu Dec 15 12:10:38 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	alarm_code,global,class=CODE,delta=1
+    25   000000                     
+    26                           	psect	udata_acs
+    27   000023                     alarm_minute:
+    28                           	callstack 0
+    29   000023                     	ds	1
+    30   000024                     alarm_hour:
+    31                           	callstack 0
+    32   000024                     	ds	1
+    33   000025                     alarm_set:
+    34                           	callstack 0
+    35   000025                     	ds	1
+    36   000026                     alarm_hour_number:
+    37                           	callstack 0
+    38   000026                     	ds	1
+    39                           
+    40                           	psect	edata
+    41   000000                     stk_offset	set	0
+    42   000000                     auto_size	set	0
+    43                           
+    44                           ; stack_auto defines a symbol /name/_offset which equates to the
+    45                           ; stack offset of the auto object in question
+    46   000000                     
+    47                           ; stack_param defines a symbol /name/_offset which equates to the
+    48                           ; stack offset of the parameter object in question
+    49   000000                     
+    50                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    51                           ; it also links in to the btemp symbol so that can be used
+    52   000000                     
+    53                           ; restore_stack adjusts the SP to remove all auto and parameter
+    54                           ; objects from the stack prior to returning from a function
+    55   000000                     
+    56                           	psect	alarm_code
+    57   01C53C                     alarm_setup:
+    58                           	callstack 0
+    59   01C53C  0E00               	movlw	0
+    60   01C53E  6F23               	movwf	alarm_minute,b
+    61   01C540  6F24               	movwf	alarm_hour,b
+    62   01C542  6F25               	movwf	alarm_set,b
+    63   01C544  6F26               	movwf	alarm_hour_number,b
+    64   01C546  0012               	return	
+    65   01C548                     check_alarm:
+    66                           	callstack 0
+    67   01C548  0E01               	movlw	1
+    68   01C54A  6325               	cpfseq	alarm_set,b
+    69   01C54C  0012               	return	
+    70   01C54E  5128               	movf	minute,w,b
+    71   01C550  6323               	cpfseq	alarm_minute,b
+    72   01C552  0012               	return	
+    73   01C554  5129               	movf	hour,w,b
+    74   01C556  6324               	cpfseq	alarm_hour,b
+    75   01C558  0012               	return	
+    76   01C55A  809D               	bsf	157,0,c
+    77   01C55C  0012               	return	
+    78                           tosu	equ	0xFFF
+    79                           tosh	equ	0xFFE
+    80                           tosl	equ	0xFFD
+    81                           stkptr	equ	0xFFC
+    82                           pclatu	equ	0xFFB
+    83                           pclath	equ	0xFFA
+    84                           pcl	equ	0xFF9
+    85                           tblptru	equ	0xFF8
+    86                           tblptrh	equ	0xFF7
+    87                           tblptrl	equ	0xFF6
+    88                           tablat	equ	0xFF5
+    89                           prodh	equ	0xFF4
+    90                           prodl	equ	0xFF3
+    91                           indf0	equ	0xFEF
+    92                           postinc0	equ	0xFEE
+    93                           postdec0	equ	0xFED
+    94                           preinc0	equ	0xFEC
+    95                           plusw0	equ	0xFEB
+    96                           fsr0h	equ	0xFEA
+    97                           fsr0l	equ	0xFE9
+    98                           wreg	equ	0xFE8
+    99                           indf1	equ	0xFE7
+   100                           postinc1	equ	0xFE6
+   101                           postdec1	equ	0xFE5
+   102                           preinc1	equ	0xFE4
+   103                           plusw1	equ	0xFE3
+   104                           fsr1h	equ	0xFE2
+   105                           fsr1l	equ	0xFE1
+   106                           bsr	equ	0xFE0
+   107                           indf2	equ	0xFDF
+   108                           postinc2	equ	0xFDE
+   109                           postdec2	equ	0xFDD
+   110                           preinc2	equ	0xFDC
+   111                           plusw2	equ	0xFDB
+   112                           fsr2h	equ	0xFDA
+   113                           fsr2l	equ	0xFD9
+   114                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Thu Dec 15 12:10:38 2022
+
+                            PIE1 000F9D                              hour 0029                            minute 0028  
+                         isa$std 000001                       check_alarm C548                       alarm_setup C53C  
+               alarm_hour_number 0026                        alarm_hour 0024                         alarm_set 0025  
+                    alarm_minute 0023                         isa$xinst 000000  

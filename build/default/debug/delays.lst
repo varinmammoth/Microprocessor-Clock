@@ -1,0 +1,136 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Thu Dec 15 12:10:38 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	delay_code,global,class=CODE,delta=1
+    25   000000                     
+    26                           	psect	udata_acs
+    27   00002F                     counter1:
+    28   00002F                     	ds	1
+    29   000030                     counter2:
+    30   000030                     	ds	1
+    31   000031                     counter3:
+    32   000031                     	ds	1
+    33   000032                     counter4:
+    34   000032                     	ds	1
+    35                           
+    36                           	psect	edata
+    37   000000                     stk_offset	set	0
+    38   000000                     auto_size	set	0
+    39                           
+    40                           ; stack_auto defines a symbol /name/_offset which equates to the
+    41                           ; stack offset of the auto object in question
+    42   000000                     
+    43                           ; stack_param defines a symbol /name/_offset which equates to the
+    44                           ; stack offset of the parameter object in question
+    45   000000                     
+    46                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    47                           ; it also links in to the btemp symbol so that can be used
+    48   000000                     
+    49                           ; restore_stack adjusts the SP to remove all auto and parameter
+    50                           ; objects from the stack prior to returning from a function
+    51   000000                     
+    52                           	psect	delay_code
+    53   01C55E                     delay:
+    54                           	callstack 0
+    55   01C55E  6E2F               	movwf	counter1,c
+    56   01C560  ECB9  F0E2         	call	delay1
+    57   01C564  0012               	return	
+    58   01C566                     delay_long:
+    59                           	callstack 0
+    60   01C566  6E30               	movwf	counter2,c
+    61   01C568  6E31               	movwf	counter3,c
+    62   01C56A  6E32               	movwf	counter4,c
+    63   01C56C  ECBC  F0E2         	call	delay2
+    64   01C570  0012               	return	
+    65   01C572                     delay1:
+    66   01C572  2E2F               	decfsz	counter1,f,c
+    67   01C574  D7FE               	bra	delay1
+    68   01C576  0012               	return	
+    69   01C578                     delay2:
+    70   01C578  6E31               	movwf	counter3,c
+    71   01C57A  ECC2  F0E2         	call	delay3
+    72   01C57E  2E30               	decfsz	counter2,f,c
+    73   01C580  D7FB               	bra	delay2
+    74   01C582  0012               	return	
+    75   01C584                     delay3:
+    76   01C584  6E32               	movwf	counter4,c
+    77   01C586  ECC8  F0E2         	call	delay4
+    78   01C58A  2E31               	decfsz	counter3,f,c
+    79   01C58C  D7FB               	bra	delay3
+    80   01C58E  0012               	return	
+    81   01C590                     delay4:
+    82   01C590  2E32               	decfsz	counter4,f,c
+    83   01C592  D7FE               	bra	delay4
+    84   01C594  0012               	return	
+    85                           tosu	equ	0xFFF
+    86                           tosh	equ	0xFFE
+    87                           tosl	equ	0xFFD
+    88                           stkptr	equ	0xFFC
+    89                           pclatu	equ	0xFFB
+    90                           pclath	equ	0xFFA
+    91                           pcl	equ	0xFF9
+    92                           tblptru	equ	0xFF8
+    93                           tblptrh	equ	0xFF7
+    94                           tblptrl	equ	0xFF6
+    95                           tablat	equ	0xFF5
+    96                           prodh	equ	0xFF4
+    97                           prodl	equ	0xFF3
+    98                           indf0	equ	0xFEF
+    99                           postinc0	equ	0xFEE
+   100                           postdec0	equ	0xFED
+   101                           preinc0	equ	0xFEC
+   102                           plusw0	equ	0xFEB
+   103                           fsr0h	equ	0xFEA
+   104                           fsr0l	equ	0xFE9
+   105                           wreg	equ	0xFE8
+   106                           indf1	equ	0xFE7
+   107                           postinc1	equ	0xFE6
+   108                           postdec1	equ	0xFE5
+   109                           preinc1	equ	0xFE4
+   110                           plusw1	equ	0xFE3
+   111                           fsr1h	equ	0xFE2
+   112                           fsr1l	equ	0xFE1
+   113                           bsr	equ	0xFE0
+   114                           indf2	equ	0xFDF
+   115                           postinc2	equ	0xFDE
+   116                           postdec2	equ	0xFDD
+   117                           preinc2	equ	0xFDC
+   118                           plusw2	equ	0xFDB
+   119                           fsr2h	equ	0xFDA
+   120                           fsr2l	equ	0xFD9
+   121                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Thu Dec 15 12:10:38 2022
+
+                           delay C55E                            delay1 C572                            delay2 C578  
+                          delay3 C584                            delay4 C590                           isa$std 000001  
+                        counter1 002F                          counter2 0030                          counter3 0031  
+                        counter4 0032                        delay_long C566                         isa$xinst 000000  

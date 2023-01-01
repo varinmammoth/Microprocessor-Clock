@@ -1,0 +1,131 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Thu Dec 15 12:10:38 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,abs,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24   000000                     
+    25                           	psect	udata_acs
+    26   000035                     update_hand_value:
+    27                           	callstack 0
+    28   000035                     	ds	1
+    29                           
+    30                           	psect	code
+    31   000000                     	org	0
+    32   000000  EF06  F000         	goto	setup
+    33   000008                     	org	8
+    34   000008  EFCB  F0E2         	goto	timer_interrupt
+    35   00000C                     setup:
+    36   00000C  0E00               	movlw	0
+    37   00000E  6E94               	movwf	3988,c
+    38   000010  6E95               	movwf	3989,c
+    39   000012  6E97               	movwf	3991,c
+    40   000014  6E96               	movwf	3990,c
+    41   000016  6E99               	movwf	3993,c
+    42   000018  6E98               	movwf	3992,c
+    43   00001A  6E82               	movwf	3970,c
+    44   00001C  6E83               	movwf	3971,c
+    45   00001E  6E87               	movwf	3975,c
+    46   000020  ECE3  F0E2         	call	timer_setup
+    47   000024  EC1F  F0F2         	call	lengths_setup
+    48   000028  EC25  F0E3         	call	initialize_time
+    49   00002C  EC9E  F0E2         	call	alarm_setup
+    50   000030  EC30  F0E4         	call	LCD_Setup
+    51   000034  EC9D  F0E3         	call	LCD_show
+    52   000038  EF1E  F000         	goto	start
+    53   00003C                     start:
+    54                           	callstack 0
+    55   00003C  EC2E  F0F2         	call	display
+    56   000040  ECC0  F0E4         	call	keypad_run
+    57   000044  ECD8  F0E4         	call	keypad_check
+    58   000048  EF1E  F000         	goto	start
+    59                           
+    60                           	psect	edata
+    61   000000                     stk_offset	set	0
+    62   000000                     auto_size	set	0
+    63                           
+    64                           ; stack_auto defines a symbol /name/_offset which equates to the
+    65                           ; stack offset of the auto object in question
+    66   000000                     
+    67                           ; stack_param defines a symbol /name/_offset which equates to the
+    68                           ; stack offset of the parameter object in question
+    69   000000                     
+    70                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    71                           ; it also links in to the btemp symbol so that can be used
+    72   000000                     
+    73                           ; restore_stack adjusts the SP to remove all auto and parameter
+    74                           ; objects from the stack prior to returning from a function
+    75   000000                     tosu	equ	0xFFF
+    76                           tosh	equ	0xFFE
+    77                           tosl	equ	0xFFD
+    78                           stkptr	equ	0xFFC
+    79                           pclatu	equ	0xFFB
+    80                           pclath	equ	0xFFA
+    81                           pcl	equ	0xFF9
+    82                           tblptru	equ	0xFF8
+    83                           tblptrh	equ	0xFF7
+    84                           tblptrl	equ	0xFF6
+    85                           tablat	equ	0xFF5
+    86                           prodh	equ	0xFF4
+    87                           prodl	equ	0xFF3
+    88                           indf0	equ	0xFEF
+    89                           postinc0	equ	0xFEE
+    90                           postdec0	equ	0xFED
+    91                           preinc0	equ	0xFEC
+    92                           plusw0	equ	0xFEB
+    93                           fsr0h	equ	0xFEA
+    94                           fsr0l	equ	0xFE9
+    95                           wreg	equ	0xFE8
+    96                           indf1	equ	0xFE7
+    97                           postinc1	equ	0xFE6
+    98                           postdec1	equ	0xFE5
+    99                           preinc1	equ	0xFE4
+   100                           plusw1	equ	0xFE3
+   101                           fsr1h	equ	0xFE2
+   102                           fsr1l	equ	0xFE1
+   103                           bsr	equ	0xFE0
+   104                           indf2	equ	0xFDF
+   105                           postinc2	equ	0xFDE
+   106                           postdec2	equ	0xFDD
+   107                           preinc2	equ	0xFDC
+   108                           plusw2	equ	0xFDB
+   109                           fsr2h	equ	0xFDA
+   110                           fsr2l	equ	0xFD9
+   111                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Thu Dec 15 12:10:38 2022
+
+                             rst 0000                             PORTC 000F82                             PORTD 000F83  
+                           PORTH 000F87                             TRISC 000F94                             TRISD 000F95  
+                           TRISE 000F96                             TRISF 000F97                             TRISG 000F98  
+                           TRISH 000F99                             setup 000C                             start 003C  
+                 timer_interrupt C596                            int_hi 0004                           isa$std 000001  
+                         display E45C                      keypad_check C9B0                 update_hand_value 0035  
+                        LCD_show C73A                     lengths_setup E43E                       alarm_setup C53C  
+                       LCD_Setup C860                       timer_setup C5C6                       update_time C654  
+                      keypad_run C980                         isa$xinst 000000                   initialize_time C64A  

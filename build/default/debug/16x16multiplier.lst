@@ -1,0 +1,272 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Thu Dec 15 12:10:37 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	multiplier_code,global,class=CODE,delta=1
+    25   000000                     
+    26                           	psect	udata_acs
+    27   000000                     eight1:
+    28                           	callstack 0
+    29   000000                     	ds	1
+    30   000001                     eight2:
+    31                           	callstack 0
+    32   000001                     	ds	1
+    33   000002                     eight3:
+    34                           	callstack 0
+    35   000002                     	ds	1
+    36   000003                     eight4:
+    37                           	callstack 0
+    38   000003                     	ds	1
+    39   000004                     temp1:
+    40   000004                     	ds	1
+    41   000005                     temp2:
+    42   000005                     	ds	1
+    43   000006                     temp3:
+    44   000006                     	ds	1
+    45   000007                     temp4:
+    46   000007                     	ds	1
+    47   000008                     address_1_high:
+    48                           	callstack 0
+    49   000008                     	ds	1
+    50   000009                     address_1_low:
+    51                           	callstack 0
+    52   000009                     	ds	1
+    53   00000A                     address_2_high:
+    54                           	callstack 0
+    55   00000A                     	ds	1
+    56   00000B                     address_2_low:
+    57                           	callstack 0
+    58   00000B                     	ds	1
+    59   00000C                     address_1_1:
+    60                           	callstack 0
+    61   00000C                     	ds	1
+    62   00000D                     address_1_2:
+    63                           	callstack 0
+    64   00000D                     	ds	1
+    65   00000E                     address_1_3:
+    66                           	callstack 0
+    67   00000E                     	ds	1
+    68   00000F                     address_2:
+    69                           	callstack 0
+    70   00000F                     	ds	1
+    71                           
+    72                           	psect	edata
+    73   000000                     stk_offset	set	0
+    74   000000                     auto_size	set	0
+    75                           
+    76                           ; stack_auto defines a symbol /name/_offset which equates to the
+    77                           ; stack offset of the auto object in question
+    78   000000                     
+    79                           ; stack_param defines a symbol /name/_offset which equates to the
+    80                           ; stack offset of the parameter object in question
+    81   000000                     
+    82                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    83                           ; it also links in to the btemp symbol so that can be used
+    84   000000                     
+    85                           ; restore_stack adjusts the SP to remove all auto and parameter
+    86                           ; objects from the stack prior to returning from a function
+    87   000000                     
+    88                           	psect	multiplier_code
+    89   01C78E                     multiplier16x16:
+    90                           	callstack 0
+    91                           
+    92                           ; multiply 1-low and 2-low, store in eight1234
+    93   01C78E  5109               	movf	address_1_low,w,b
+    94   01C790  030B               	mulwf	address_2_low,b
+    95   01C792  CFF3 F000          	movff	prodl,eight1
+    96   01C796  CFF4 F001          	movff	prodh,eight2
+    97   01C79A  0E00               	movlw	0
+    98   01C79C  6F02               	movwf	eight3,b
+    99   01C79E  6F03               	movwf	eight4,b
+   100                           
+   101                           ; multiply 2-low and 1-high, store in temp1234
+   102   01C7A0  5108               	movf	address_1_high,w,b
+   103   01C7A2  030B               	mulwf	address_2_low,b
+   104   01C7A4  CFF3 F005          	movff	prodl,temp2
+   105   01C7A8  CFF4 F006          	movff	prodh,temp3
+   106   01C7AC  0E00               	movlw	0
+   107   01C7AE  6F04               	movwf	temp1,b
+   108   01C7B0  6F07               	movwf	temp4,b
+   109                           
+   110                           ; add temp1234 with eight1234, and store result in eight1234
+   111   01C7B2  5104               	movf	temp1,w,b
+   112   01C7B4  2300               	addwfc	eight1,f,b
+   113   01C7B6  5105               	movf	temp2,w,b
+   114   01C7B8  2301               	addwfc	eight2,f,b
+   115   01C7BA  5106               	movf	temp3,w,b
+   116   01C7BC  2302               	addwfc	eight3,f,b
+   117   01C7BE  5107               	movf	temp4,w,b
+   118   01C7C0  2303               	addwfc	eight4,f,b
+   119                           
+   120                           ; now the sum of first two lines are in eight1234
+   121                           ; do multiplication of 2-hight and 1-low and store in temp1234
+   122   01C7C2  510A               	movf	address_2_high,w,b
+   123   01C7C4  0309               	mulwf	address_1_low,b
+   124   01C7C6  CFF3 F005          	movff	prodl,temp2
+   125   01C7CA  CFF4 F006          	movff	prodh,temp3
+   126   01C7CE  0E00               	movlw	0
+   127   01C7D0  6F04               	movwf	temp1,b
+   128   01C7D2  6F07               	movwf	temp4,b
+   129                           
+   130                           ; add temp1234 with eight1234, and store result in eight1234
+   131   01C7D4  5104               	movf	temp1,w,b
+   132   01C7D6  2300               	addwfc	eight1,f,b
+   133   01C7D8  5105               	movf	temp2,w,b
+   134   01C7DA  2301               	addwfc	eight2,f,b
+   135   01C7DC  5106               	movf	temp3,w,b
+   136   01C7DE  2302               	addwfc	eight3,f,b
+   137   01C7E0  5107               	movf	temp4,w,b
+   138   01C7E2  2303               	addwfc	eight4,f,b
+   139                           
+   140                           ; now the sum of first three lines are in eight1234
+   141                           ; do multiplication of 1-high and 2-high and store in temp1234
+   142   01C7E4  510A               	movf	address_2_high,w,b
+   143   01C7E6  0308               	mulwf	address_1_high,b
+   144   01C7E8  CFF3 F006          	movff	prodl,temp3
+   145   01C7EC  CFF4 F007          	movff	prodh,temp4
+   146   01C7F0  0E00               	movlw	0
+   147   01C7F2  6F04               	movwf	temp1,b
+   148   01C7F4  6F05               	movwf	temp2,b
+   149                           
+   150                           ; add temp1234 with eight1234, and store result in eight1234
+   151   01C7F6  5104               	movf	temp1,w,b
+   152   01C7F8  2300               	addwfc	eight1,f,b
+   153   01C7FA  5105               	movf	temp2,w,b
+   154   01C7FC  2301               	addwfc	eight2,f,b
+   155   01C7FE  5106               	movf	temp3,w,b
+   156   01C800  2302               	addwfc	eight3,f,b
+   157   01C802  5107               	movf	temp4,w,b
+   158   01C804  2303               	addwfc	eight4,f,b
+   159                           
+   160                           ; now the sum of first four lines are in eight1234, ie. the final result of the 16bit x 16bit multip
+      +                          lication
+   161   01C806  0012               	return	
+   162   01C808                     multiplier24x8:
+   163                           	callstack 0
+   164                           
+   165                           ; multiply 1-1 and 2, store in eight1234
+   166   01C808  510C               	movf	address_1_1,w,b
+   167   01C80A  030F               	mulwf	address_2,b
+   168   01C80C  CFF3 F000          	movff	prodl,eight1
+   169   01C810  CFF4 F001          	movff	prodh,eight2
+   170   01C814  0E00               	movlw	0
+   171   01C816  6F02               	movwf	eight3,b
+   172   01C818  6F03               	movwf	eight4,b
+   173                           
+   174                           ; multiply 1-2 and 2, store in temp1234
+   175   01C81A  510D               	movf	address_1_2,w,b
+   176   01C81C  030F               	mulwf	address_2,b
+   177   01C81E  CFF3 F005          	movff	prodl,temp2
+   178   01C822  CFF4 F006          	movff	prodh,temp3
+   179   01C826  0E00               	movlw	0
+   180   01C828  6F04               	movwf	temp1,b
+   181   01C82A  6F07               	movwf	temp4,b
+   182                           
+   183                           ; add temp1234 with eight1234, and store result in eight1234
+   184   01C82C  5104               	movf	temp1,w,b
+   185   01C82E  2300               	addwfc	eight1,f,b
+   186   01C830  5105               	movf	temp2,w,b
+   187   01C832  2301               	addwfc	eight2,f,b
+   188   01C834  5106               	movf	temp3,w,b
+   189   01C836  2302               	addwfc	eight3,f,b
+   190   01C838  5107               	movf	temp4,w,b
+   191   01C83A  2303               	addwfc	eight4,f,b
+   192                           
+   193                           ; now the sum of first two lines are in eight1234
+   194                           ; do multiplication of 1-3 and 2 and store in temp1234
+   195   01C83C  510E               	movf	address_1_3,w,b
+   196   01C83E  030F               	mulwf	address_2,b
+   197   01C840  CFF3 F006          	movff	prodl,temp3
+   198   01C844  CFF4 F007          	movff	prodh,temp4
+   199   01C848  0E00               	movlw	0
+   200   01C84A  6F04               	movwf	temp1,b
+   201   01C84C  6F05               	movwf	temp2,b
+   202                           
+   203                           ; add temp1234 with eight1234, and store result in eight1234
+   204   01C84E  5104               	movf	temp1,w,b
+   205   01C850  2300               	addwfc	eight1,f,b
+   206   01C852  5105               	movf	temp2,w,b
+   207   01C854  2301               	addwfc	eight2,f,b
+   208   01C856  5106               	movf	temp3,w,b
+   209   01C858  2302               	addwfc	eight3,f,b
+   210   01C85A  5107               	movf	temp4,w,b
+   211   01C85C  2303               	addwfc	eight4,f,b
+   212                           
+   213                           ; now the sum of first four lines are in eight1234, ie. the final result of the 16bit x 16bit multip
+      +                          lication
+   214   01C85E  0012               	return	
+   215                           tosu	equ	0xFFF
+   216                           tosh	equ	0xFFE
+   217                           tosl	equ	0xFFD
+   218                           stkptr	equ	0xFFC
+   219                           pclatu	equ	0xFFB
+   220                           pclath	equ	0xFFA
+   221                           pcl	equ	0xFF9
+   222                           tblptru	equ	0xFF8
+   223                           tblptrh	equ	0xFF7
+   224                           tblptrl	equ	0xFF6
+   225                           tablat	equ	0xFF5
+   226                           prodh	equ	0xFF4
+   227                           prodl	equ	0xFF3
+   228                           indf0	equ	0xFEF
+   229                           postinc0	equ	0xFEE
+   230                           postdec0	equ	0xFED
+   231                           preinc0	equ	0xFEC
+   232                           plusw0	equ	0xFEB
+   233                           fsr0h	equ	0xFEA
+   234                           fsr0l	equ	0xFE9
+   235                           wreg	equ	0xFE8
+   236                           indf1	equ	0xFE7
+   237                           postinc1	equ	0xFE6
+   238                           postdec1	equ	0xFE5
+   239                           preinc1	equ	0xFE4
+   240                           plusw1	equ	0xFE3
+   241                           fsr1h	equ	0xFE2
+   242                           fsr1l	equ	0xFE1
+   243                           bsr	equ	0xFE0
+   244                           indf2	equ	0xFDF
+   245                           postinc2	equ	0xFDE
+   246                           postdec2	equ	0xFDD
+   247                           preinc2	equ	0xFDC
+   248                           plusw2	equ	0xFDB
+   249                           fsr2h	equ	0xFDA
+   250                           fsr2l	equ	0xFD9
+   251                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Thu Dec 15 12:10:37 2022
+
+                           PRODH 000FF4                             PRODL 000FF3                             temp1 0004  
+                           temp2 0005                             temp3 0006                             temp4 0007  
+                  multiplier24x8 C808                            eight1 0000                            eight2 0001  
+                          eight3 0002                            eight4 0003                   multiplier16x16 C78E  
+                         isa$std 000001                       address_1_1 000C                       address_1_2 000D  
+                     address_1_3 000E                     address_1_low 0009                     address_2_low 000B  
+                       address_2 000F                         isa$xinst 000000                    address_1_high 0008  
+                  address_2_high 000A  

@@ -1,0 +1,191 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Thu Dec 15 12:10:38 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	LCD_screen_code,global,class=CODE,delta=1
+    25   000000                     
+    26                           	psect	udata_acs
+    27   000033                     counter_LCD:
+    28   000033                     	ds	1	; reserve data anywhere in RAM
+    29                           
+    30                           	psect	udata_bank4
+    31   000400                     myArray:
+    32   000400                     	ds	128	; reserve 128 bytes for message data
+    33                           
+    34                           	psect	data
+    35   01C528                     alarm_on_table:
+    36   01C528  41 6C 61 72 6D 20 6F 6E 0A 	db	65,108,97,114,109,32,111,110,10
+    37   01C531  00                 	align	2
+    38   01C532                     alarm_off_table:
+    39   01C532  41 6C 61 72 6D 20 6F 66 66 0A 	db	65,108,97,114,109,32,111,102,102,10
+    40   01C53C                     	align	2
+    41                           
+    42                           	psect	edata
+    43   000000                     stk_offset	set	0
+    44   000000                     auto_size	set	0
+    45                           
+    46                           ; stack_auto defines a symbol /name/_offset which equates to the
+    47                           ; stack offset of the auto object in question
+    48   000000                     
+    49                           ; stack_param defines a symbol /name/_offset which equates to the
+    50                           ; stack offset of the parameter object in question
+    51   000000                     
+    52                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    53                           ; it also links in to the btemp symbol so that can be used
+    54   000000                     
+    55                           ; restore_stack adjusts the SP to remove all auto and parameter
+    56                           ; objects from the stack prior to returning from a function
+    57   000000                     
+    58                           	psect	LCD_screen_code
+    59   01C6E2                     alarm_on_message:
+    60   01C6E2  EE04  F000         	lfsr	0,myArray	; Load FSR0 with address in RAM
+    61   01C6E6  0E01               	movlw	low (alarm_on_table shr (0+16))	; address of data in PM
+    62   01C6E8  6EF8               	movwf	tblptru,c	; load upper bits to TBLPTRU
+    63   01C6EA  0EC5               	movlw	high alarm_on_table	; address of data in PM
+    64   01C6EC  6EF7               	movwf	tblptrh,c	; load high byte to TBLPTRH
+    65   01C6EE  0E28               	movlw	low alarm_on_table	; address of data in PM
+    66   01C6F0  6EF6               	movwf	tblptrl,c	; load low byte to TBLPTRL
+    67   01C6F2  0E09               	movlw	9	; bytes to read
+    68   01C6F4  6E33               	movwf	counter_LCD,c	; our counter register
+    69   01C6F6                     loop_on:
+    70   01C6F6  0009               	tblrd		*+	; one byte from PM to TABLAT, increment TBLPRT
+    71   01C6F8  CFF5 FFEE          	movff	tablat,postinc0	; move data from TABLAT to (FSR0), inc FSR0
+    72   01C6FC  2E33               	decfsz	counter_LCD,f,c	; count down to zero
+    73   01C6FE  D7FB               	bra	loop_on	; keep going until finished
+    74   01C700  0E09               	movlw	9	; output message to LCD
+    75   01C702  0FFF               	addlw	255	; don't send the final carriage return to LCD
+    76   01C704  EE24  F000         	lfsr	2,myArray
+    77   01C708  EC5D  F0E4         	call	LCD_Write_Message
+    78   01C70C  0012               	return	
+    79   01C70E                     alarm_off_message:
+    80   01C70E  EE04  F000         	lfsr	0,myArray	; Load FSR0 with address in RAM
+    81   01C712  0E01               	movlw	low (alarm_off_table shr (0+16))	; address of data in PM
+    82   01C714  6EF8               	movwf	tblptru,c	; load upper bits to TBLPTRU
+    83   01C716  0EC5               	movlw	high alarm_off_table	; address of data in PM
+    84   01C718  6EF7               	movwf	tblptrh,c	; load high byte to TBLPTRH
+    85   01C71A  0E32               	movlw	low alarm_off_table	; address of data in PM
+    86   01C71C  6EF6               	movwf	tblptrl,c	; load low byte to TBLPTRL
+    87   01C71E  0E0A               	movlw	10	; bytes to read
+    88   01C720  6E33               	movwf	counter_LCD,c	; our counter register
+    89   01C722                     loop_off:
+    90   01C722  0009               	tblrd		*+	; one byte from PM to TABLAT, increment TBLPRT
+    91   01C724  CFF5 FFEE          	movff	tablat,postinc0	; move data from TABLAT to (FSR0), inc FSR0
+    92   01C728  2E33               	decfsz	counter_LCD,f,c	; count down to zero
+    93   01C72A  D7FB               	bra	loop_off	; keep going until finished
+    94   01C72C  0E0A               	movlw	10	; output message to LCD
+    95   01C72E  0FFF               	addlw	255	; don't send the final carriage return to LCD
+    96   01C730  EE24  F000         	lfsr	2,myArray
+    97   01C734  EC5D  F0E4         	call	LCD_Write_Message
+    98   01C738  0012               	return	
+    99   01C73A                     LCD_show:
+   100                           	callstack 0
+   101   01C73A  ECAB  F0E4         	call	LCD_clear
+   102   01C73E  ECB9  F0E4         	call	LCD_1st_line
+   103   01C742  ECA8  F0E3         	call	alarm_show
+   104   01C746  ECB2  F0E4         	call	LCD_2nd_line
+   105   01C74A  ECB7  F0E3         	call	alarm_time_show
+   106   01C74E  0012               	return	
+   107   01C750                     alarm_show:
+   108   01C750  ECAD  F0E3         	call	check_on
+   109   01C754  ECB2  F0E3         	call	check_off
+   110   01C758  0012               	return	
+   111   01C75A                     check_on:
+   112   01C75A  0E01               	movlw	1
+   113   01C75C  6325               	cpfseq	alarm_set,b
+   114   01C75E  EC87  F0E3         	call	alarm_off_message
+   115   01C762  0012               	return	
+   116   01C764                     check_off:
+   117   01C764  0E00               	movlw	0
+   118   01C766  6325               	cpfseq	alarm_set,b
+   119   01C768  EC71  F0E3         	call	alarm_on_message
+   120   01C76C  0012               	return	
+   121   01C76E                     alarm_time_show:
+   122   01C76E  0E00               	movlw	0
+   123   01C770  6F0A               	movwf	address_2_high,b
+   124   01C772  C026  F00B         	movff	alarm_hour_number,address_2_low
+   125   01C776  ECED  F0E2         	call	hex_to_dec
+   126   01C77A  0E3A               	movlw	58
+   127   01C77C  EC72  F0E4         	call	LCD_Send_Byte_D
+   128   01C780  0E00               	movlw	0
+   129   01C782  6F0A               	movwf	address_2_high,b
+   130   01C784  C023  F00B         	movff	alarm_minute,address_2_low
+   131   01C788  ECED  F0E2         	call	hex_to_dec
+   132   01C78C  0012               	return	
+   133                           tosu	equ	0xFFF
+   134                           tosh	equ	0xFFE
+   135                           tosl	equ	0xFFD
+   136                           stkptr	equ	0xFFC
+   137                           pclatu	equ	0xFFB
+   138                           pclath	equ	0xFFA
+   139                           pcl	equ	0xFF9
+   140                           tblptru	equ	0xFF8
+   141                           tblptrh	equ	0xFF7
+   142                           tblptrl	equ	0xFF6
+   143                           tablat	equ	0xFF5
+   144                           prodh	equ	0xFF4
+   145                           prodl	equ	0xFF3
+   146                           indf0	equ	0xFEF
+   147                           postinc0	equ	0xFEE
+   148                           postdec0	equ	0xFED
+   149                           preinc0	equ	0xFEC
+   150                           plusw0	equ	0xFEB
+   151                           fsr0h	equ	0xFEA
+   152                           fsr0l	equ	0xFE9
+   153                           wreg	equ	0xFE8
+   154                           indf1	equ	0xFE7
+   155                           postinc1	equ	0xFE6
+   156                           postdec1	equ	0xFE5
+   157                           preinc1	equ	0xFE4
+   158                           plusw1	equ	0xFE3
+   159                           fsr1h	equ	0xFE2
+   160                           fsr1l	equ	0xFE1
+   161                           bsr	equ	0xFE0
+   162                           indf2	equ	0xFDF
+   163                           postinc2	equ	0xFDE
+   164                           postdec2	equ	0xFDD
+   165                           preinc2	equ	0xFDC
+   166                           plusw2	equ	0xFDB
+   167                           fsr2h	equ	0xFDA
+   168                           fsr2l	equ	0xFD9
+   169                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Thu Dec 15 12:10:38 2022
+
+                    LCD_2nd_line C964                      LCD_1st_line C972                            TABLAT 000FF5  
+                         TBLPTRH 000FF7                           TBLPTRL 000FF6                           TBLPTRU 000FF8  
+                         isa$std 000001                           myArray 0400                           loop_on C6F6  
+               LCD_Write_Message C8BA                          LCD_show C73A                          POSTINC0 000FEE  
+                        check_on C75A                    alarm_on_table C528                          loop_off C722  
+                   address_2_low 000B                 alarm_off_message C70E                 alarm_hour_number 0026  
+                     counter_LCD 0033                   LCD_Send_Byte_D C8E4                         LCD_Setup C860  
+                       LCD_clear C956                        alarm_show C750                        hex_to_dec C5DA  
+                alarm_on_message C6E2                         check_off C764                         alarm_set 0025  
+                    alarm_minute 0023                         isa$xinst 000000                   alarm_off_table C532  
+                 alarm_time_show C76E                    address_2_high 000A  

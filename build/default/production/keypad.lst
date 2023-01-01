@@ -1,0 +1,317 @@
+
+
+Microchip MPLAB XC8 Assembler V2.40 build 20220703182018 
+                                                                                                           Fri Dec 16 09:32:15 2022
+
+
+     1                           	processor	18F87K22
+     2                           	pagewidth 132
+     3                           	psect	udata_acs,global,class=COMRAM,space=1,delta=1,lowdata,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,lowdata,noexec
+     5                           	psect	udata_bank1,global,class=BANK1,space=1,delta=1,lowdata,noexec
+     6                           	psect	udata_bank2,global,class=BANK2,space=1,delta=1,lowdata,noexec
+     7                           	psect	udata_bank3,global,class=BANK3,space=1,delta=1,lowdata,noexec
+     8                           	psect	udata_bank4,global,class=BANK4,space=1,delta=1,lowdata,noexec
+     9                           	psect	udata_bank5,global,class=BANK5,space=1,delta=1,lowdata,noexec
+    10                           	psect	udata_bank6,global,class=BANK6,space=1,delta=1,lowdata,noexec
+    11                           	psect	udata_bank7,global,class=BANK7,space=1,delta=1,lowdata,noexec
+    12                           	psect	udata_bank8,global,class=BANK8,space=1,delta=1,lowdata,noexec
+    13                           	psect	udata_bank9,global,class=BANK9,space=1,delta=1,lowdata,noexec
+    14                           	psect	udata_bank10,global,class=BANK10,space=1,delta=1,lowdata,noexec
+    15                           	psect	udata_bank11,global,class=BANK11,space=1,delta=1,lowdata,noexec
+    16                           	psect	udata_bank12,global,class=BANK12,space=1,delta=1,lowdata,noexec
+    17                           	psect	udata_bank13,global,class=BANK13,space=1,delta=1,lowdata,noexec
+    18                           	psect	udata_bank14,global,class=BANK14,space=1,delta=1,lowdata,noexec
+    19                           	psect	udata_bank15,global,class=BANK15,space=1,delta=1,lowdata,noexec
+    20                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+    21                           	psect	code,global,reloc=2,class=CODE,delta=1
+    22                           	psect	data,global,reloc=2,class=CONST,delta=1,noexec
+    23                           	psect	edata,global,class=EEDATA,space=3,delta=2,noexec
+    24                           	psect	keypad_code,global,class=CODE,delta=1
+    25   000000                     
+    26                           	psect	udata_acs
+    27   000017                     temp:
+    28   000017                     	ds	1
+    29   000018                     temp2:
+    30   000018                     	ds	1
+    31   000019                     key_code:
+    32   000019                     	ds	1
+    33   00001A                     counter_keypad:
+    34   00001A                     	ds	1
+    35   00001B                     temp_minute:
+    36   00001B                     	ds	1
+    37   00001C                     temp_hour:
+    38   00001C                     	ds	1
+    39   00001D                     temp_hour_number:
+    40   00001D                     	ds	1
+    41                           
+    42                           	psect	edata
+    43   000000                     stk_offset	set	0
+    44   000000                     auto_size	set	0
+    45                           
+    46                           ; stack_auto defines a symbol /name/_offset which equates to the
+    47                           ; stack offset of the auto object in question
+    48   000000                     
+    49                           ; stack_param defines a symbol /name/_offset which equates to the
+    50                           ; stack offset of the parameter object in question
+    51   000000                     
+    52                           ; alloc_stack adjusts the SP to allocate space for auto objects
+    53                           ; it also links in to the btemp symbol so that can be used
+    54   000000                     
+    55                           ; restore_stack adjusts the SP to remove all auto and parameter
+    56                           ; objects from the stack prior to returning from a function
+    57   000000                     
+    58                           	psect	keypad_code
+    59   01C978                     keypad_run:
+    60                           	callstack 0
+    61   01C978  0E0F               	movlw	15
+    62   01C97A  6E9A               	movwf	3994,c
+    63   01C97C  0EF0               	movlw	240
+    64   01C97E  6E88               	movwf	3976,c
+    65   01C980  0E10               	movlw	16
+    66   01C982  6F1A               	movwf	counter_keypad,b
+    67   01C984  ECCD  F0E2         	call	delay
+    68   01C988  CF88 F017          	movff	3976,temp
+    69   01C98C  0EF0               	movlw	240
+    70   01C98E  6E9A               	movwf	3994,c
+    71   01C990  0E0F               	movlw	15
+    72   01C992  6E88               	movwf	3976,c
+    73   01C994  0E10               	movlw	16
+    74   01C996  6F1A               	movwf	counter_keypad,b
+    75   01C998  ECCD  F0E2         	call	delay
+    76   01C99C  CF88 F018          	movff	3976,temp2
+    77   01C9A0  5118               	movf	temp2,w,b
+    78   01C9A2  1417               	andwf	temp,w,c
+    79   01C9A4  6F19               	movwf	key_code,b
+    80   01C9A6  0012               	return	
+    81   01C9A8                     keypad_check:
+    82                           	callstack 0
+    83   01C9A8  ECE1  F0E4         	call	check_A
+    84   01C9AC  ECE7  F0E4         	call	check_B
+    85   01C9B0  ECF9  F0E4         	call	check_C
+    86   01C9B4  EC35  F0E5         	call	check_7
+    87   01C9B8  EC3D  F0E5         	call	check_8
+    88   01C9BC  EC45  F0E5         	call	check_0
+    89   01C9C0  0012               	return	
+    90   01C9C2                     check_A:
+    91   01C9C2  0E18               	movlw	24
+    92   01C9C4  6319               	cpfseq	key_code,b
+    93   01C9C6  0012               	return	
+    94   01C9C8  EC03  F0E5         	call	set_time
+    95   01C9CC  0012               	return	
+    96   01C9CE                     check_B:
+    97   01C9CE  0E28               	movlw	40
+    98   01C9D0  6319               	cpfseq	key_code,b
+    99   01C9D2  0012               	return	
+   100   01C9D4  C029  F01B         	movff	minute,temp_minute
+   101   01C9D8  C02A  F01C         	movff	hour,temp_hour
+   102   01C9DC  C02B  F01D         	movff	hour_number,temp_hour_number
+   103   01C9E0  C01E  F029         	movff	alarm_minute,minute
+   104   01C9E4  C01F  F02A         	movff	alarm_hour,hour
+   105   01C9E8  C021  F02B         	movff	alarm_hour_number,hour_number
+   106   01C9EC  EC13  F0E5         	call	set_alarm
+   107   01C9F0  0012               	return	
+   108   01C9F2                     check_C:
+   109   01C9F2  0E48               	movlw	72
+   110   01C9F4  6319               	cpfseq	key_code,b
+   111   01C9F6  0012               	return	
+   112   01C9F8  2B16               	incf	style_number,f,b
+   113   01C9FA  0E03               	movlw	3
+   114   01C9FC  6316               	cpfseq	style_number,b
+   115   01C9FE  0012               	return	
+   116   01CA00  0E01               	movlw	1
+   117   01CA02  6F16               	movwf	style_number,b
+   118   01CA04  0012               	return	
+   119   01CA06                     set_time:
+   120   01CA06  9AF2               	bcf	242,5,c
+   121   01CA08  ECBC  F0E4         	call	keypad_run
+   122   01CA0C  EC23  F0E5         	call	check_1
+   123   01CA10  EC2C  F0E5         	call	check_2
+   124   01CA14  EC35  F0E5         	call	check_7
+   125   01CA18  EC3D  F0E5         	call	check_8
+   126   01CA1C  EC2A  F0F2         	call	display
+   127   01CA20  EC4F  F0E5         	call	check_D
+   128   01CA24  D7F0               	bra	set_time
+   129   01CA26                     set_alarm:
+   130   01CA26  9AF2               	bcf	242,5,c
+   131   01CA28  ECBC  F0E4         	call	keypad_run
+   132   01CA2C  EC23  F0E5         	call	check_1
+   133   01CA30  EC2C  F0E5         	call	check_2
+   134   01CA34  EC35  F0E5         	call	check_7
+   135   01CA38  EC3D  F0E5         	call	check_8
+   136   01CA3C  EC2A  F0F2         	call	display
+   137   01CA40  EC55  F0E5         	call	check_D_alarm
+   138   01CA44  D7F0               	bra	set_alarm
+   139   01CA46                     check_1:
+   140   01CA46  0E11               	movlw	17
+   141   01CA48  6319               	cpfseq	key_code,b
+   142   01CA4A  0012               	return	
+   143   01CA4C  EC97  F0E5         	call	inc_hour
+   144   01CA50  0E70               	movlw	112
+   145   01CA52  ECD1  F0E2         	call	delay_long
+   146   01CA56  0012               	return	
+   147   01CA58                     check_2:
+   148   01CA58  0E12               	movlw	18
+   149   01CA5A  6319               	cpfseq	key_code,b
+   150   01CA5C  0012               	return	
+   151   01CA5E  EC69  F0E5         	call	inc_minute
+   152   01CA62  0E70               	movlw	112
+   153   01CA64  ECD1  F0E2         	call	delay_long
+   154   01CA68  0012               	return	
+   155   01CA6A                     check_7:
+   156   01CA6A  0E41               	movlw	65
+   157   01CA6C  6319               	cpfseq	key_code,b
+   158   01CA6E  0012               	return	
+   159   01CA70  0E01               	movlw	1
+   160   01CA72  6F20               	movwf	alarm_set,b
+   161   01CA74  EC99  F0E3         	call	LCD_show
+   162   01CA78  0012               	return	
+   163   01CA7A                     check_8:
+   164   01CA7A  0E42               	movlw	66
+   165   01CA7C  6319               	cpfseq	key_code,b
+   166   01CA7E  0012               	return	
+   167   01CA80  0E00               	movlw	0
+   168   01CA82  6F20               	movwf	alarm_set,b
+   169   01CA84  EC99  F0E3         	call	LCD_show
+   170   01CA88  0012               	return	
+   171   01CA8A                     check_0:
+   172   01CA8A  0E82               	movlw	130
+   173   01CA8C  6319               	cpfseq	key_code,b
+   174   01CA8E  0012               	return	
+   175   01CA90  0E00               	movlw	0
+   176   01CA92  6F20               	movwf	alarm_set,b
+   177   01CA94  6F22               	movwf	alarm_hit,b
+   178   01CA96  6E87               	movwf	3975,c
+   179                           
+   180                           ; bcf ((PIE1) and 0FFh), 0, a
+   181   01CA98  EC99  F0E3         	call	LCD_show
+   182   01CA9C  0012               	return	
+   183   01CA9E                     check_D:
+   184   01CA9E  0E88               	movlw	136
+   185   01CAA0  6319               	cpfseq	key_code,b
+   186   01CAA2  0012               	return	
+   187   01CAA4  8AF2               	bsf	242,5,c
+   188   01CAA6  EF1E  F000         	goto	start
+   189   01CAAA                     check_D_alarm:
+   190   01CAAA  0E88               	movlw	136
+   191   01CAAC  6319               	cpfseq	key_code,b
+   192   01CAAE  0012               	return	
+   193   01CAB0  8AF2               	bsf	242,5,c
+   194   01CAB2  C029  F01E         	movff	minute,alarm_minute
+   195   01CAB6  C02A  F01F         	movff	hour,alarm_hour
+   196   01CABA  C02B  F021         	movff	hour_number,alarm_hour_number
+   197   01CABE  C01B  F029         	movff	temp_minute,minute
+   198   01CAC2  C01C  F02A         	movff	temp_hour,hour
+   199   01CAC6  C01D  F02B         	movff	temp_hour_number,hour_number
+   200   01CACA  EC99  F0E3         	call	LCD_show
+   201   01CACE  EF1E  F000         	goto	start
+   202   01CAD2                     inc_minute:
+   203   01CAD2  2B29               	incf	minute,f,b
+   204   01CAD4  EC75  F0E5         	call	check_minute12
+   205   01CAD8  EC7B  F0E5         	call	check_minute24
+   206   01CADC  EC81  F0E5         	call	check_minute36
+   207   01CAE0  EC87  F0E5         	call	check_minute48
+   208   01CAE4  EC8D  F0E5         	call	check_minute60
+   209   01CAE8  0012               	return	
+   210   01CAEA                     check_minute12:
+   211   01CAEA  0E0C               	movlw	12
+   212   01CAEC  6329               	cpfseq	minute,b
+   213   01CAEE  0012               	return	
+   214   01CAF0  EC5F  F0E3         	call	update_hour
+   215   01CAF4  0012               	return	
+   216   01CAF6                     check_minute24:
+   217   01CAF6  0E18               	movlw	24
+   218   01CAF8  6329               	cpfseq	minute,b
+   219   01CAFA  0012               	return	
+   220   01CAFC  EC5F  F0E3         	call	update_hour
+   221   01CB00  0012               	return	
+   222   01CB02                     check_minute36:
+   223   01CB02  0E24               	movlw	36
+   224   01CB04  6329               	cpfseq	minute,b
+   225   01CB06  0012               	return	
+   226   01CB08  EC5F  F0E3         	call	update_hour
+   227   01CB0C  0012               	return	
+   228   01CB0E                     check_minute48:
+   229   01CB0E  0E30               	movlw	48
+   230   01CB10  6329               	cpfseq	minute,b
+   231   01CB12  0012               	return	
+   232   01CB14  EC5F  F0E3         	call	update_hour
+   233   01CB18  0012               	return	
+   234   01CB1A                     check_minute60:
+   235   01CB1A  0E3C               	movlw	60
+   236   01CB1C  6329               	cpfseq	minute,b
+   237   01CB1E  0012               	return	
+   238   01CB20  EC5F  F0E3         	call	update_hour
+   239   01CB24  EC66  F0E3         	call	update_hour_number
+   240   01CB28  0E00               	movlw	0
+   241   01CB2A  6F29               	movwf	minute,b
+   242   01CB2C  0012               	return	
+   243   01CB2E                     inc_hour:
+   244   01CB2E  EC66  F0E3         	call	update_hour_number
+   245   01CB32  0E05               	movlw	5
+   246   01CB34  272A               	addwf	hour,f,b
+   247   01CB36  0E36               	movlw	54
+   248   01CB38  652A               	cpfsgt	hour,b
+   249   01CB3A  0012               	return	
+   250   01CB3C  0E3C               	movlw	60
+   251   01CB3E  5F2A               	subwf	hour,f,b
+   252   01CB40  0012               	return	
+   253                           tosu	equ	0xFFF
+   254                           tosh	equ	0xFFE
+   255                           tosl	equ	0xFFD
+   256                           stkptr	equ	0xFFC
+   257                           pclatu	equ	0xFFB
+   258                           pclath	equ	0xFFA
+   259                           pcl	equ	0xFF9
+   260                           tblptru	equ	0xFF8
+   261                           tblptrh	equ	0xFF7
+   262                           tblptrl	equ	0xFF6
+   263                           tablat	equ	0xFF5
+   264                           prodh	equ	0xFF4
+   265                           prodl	equ	0xFF3
+   266                           indf0	equ	0xFEF
+   267                           postinc0	equ	0xFEE
+   268                           postdec0	equ	0xFED
+   269                           preinc0	equ	0xFEC
+   270                           plusw0	equ	0xFEB
+   271                           fsr0h	equ	0xFEA
+   272                           fsr0l	equ	0xFE9
+   273                           wreg	equ	0xFE8
+   274                           indf1	equ	0xFE7
+   275                           postinc1	equ	0xFE6
+   276                           postdec1	equ	0xFE5
+   277                           preinc1	equ	0xFE4
+   278                           plusw1	equ	0xFE3
+   279                           fsr1h	equ	0xFE2
+   280                           fsr1l	equ	0xFE1
+   281                           bsr	equ	0xFE0
+   282                           indf2	equ	0xFDF
+   283                           postinc2	equ	0xFDE
+   284                           postdec2	equ	0xFDD
+   285                           preinc2	equ	0xFDC
+   286                           plusw2	equ	0xFDB
+   287                           fsr2h	equ	0xFDA
+   288                           fsr2l	equ	0xFD9
+   289                           status	equ	0xFD8
+
+
+Microchip Technology PIC18 Macro Assembler V2.40 build 20220703182018 
+Symbol Table                                                                                               Fri Dec 16 09:32:15 2022
+
+                            hour 002A                              temp 0017                             PORTH 000F87  
+                           PORTJ 000F88                             TRISJ 000F9A                             delay C59A  
+                           temp2 0018                             start 003C                            INTCON 000FF2  
+                          minute 0029                            second 0028                           check_0 CA8A  
+                         check_1 CA46                           check_2 CA58                           check_7 CA6A  
+                         check_8 CA7A                           check_A C9C2                           check_B C9CE  
+                         check_C C9F2                           check_D CA9E                           isa$std 000001  
+                         display E454                      keypad_check C9A8                    check_minute12 CAEA  
+                  check_minute24 CAF6                    check_minute60 CB1A                    check_minute36 CB02  
+                  check_minute48 CB0E                          LCD_show C732                  temp_hour_number 001D  
+                        inc_hour CB2E                          key_code 0019                          set_time CA06  
+               alarm_hour_number 0021                     check_D_alarm CAAA                    counter_keypad 001A  
+                     hour_number 002B                update_hour_number C6CC                        alarm_hour 001F  
+                      delay_long C5A2                       temp_minute 001B                      style_number 0016  
+                      inc_minute CAD2                       update_hour C6BE                        keypad_run C978  
+                       alarm_hit 0022                         alarm_set 0020                      alarm_minute 001E  
+                       isa$xinst 000000                         set_alarm CA26                         temp_hour 001C  
